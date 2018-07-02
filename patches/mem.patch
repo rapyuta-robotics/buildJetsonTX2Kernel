@@ -1,0 +1,14 @@
+--- drivers/char/mem.c	2018-07-02 19:49:12.316660633 +0900
++++ drivers/char/mem.c	2018-07-02 19:47:13.760614579 +0900
+@@ -80,6 +80,11 @@
+ #else
+ static inline int range_is_allowed(unsigned long pfn, unsigned long size)
+ {
++	//Not allow read/write requests for first 2MB and PFN Invalid
++	if((!pfn_valid(pfn)) && (pfn <= 0x200)) {
++		printk(KERN_INFO "Program %s tried to access /dev/mem between %lx->%lx.\n", current->comm, (pfn << PAGE_SHIFT), ((pfn<<PAGE_SHIFT)+size));
++		return 0;
++	}
+ 	return 1;
+ }
+ #endif
